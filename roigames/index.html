@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ゲームアルゴリズム一覧</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        h1 {
+            text-align: center;
+            color: #0056b3;
+            font-size: 1.8em;
+        }
+        .algorithm-list {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .algorithm-item {
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+        .algorithm-item:last-child {
+            border-bottom: none;
+        }
+        h2 {
+            font-size: 1.4em;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        p {
+            margin: 5px 0;
+            font-size: 1em;
+        }
+        a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        /* スマホ対応 */
+        @media (max-width: 375px) { /* iPhone SEや画面幅375px以下のデバイスに対応 */
+            body {
+                padding: 10px;
+            }
+            h1 {
+                font-size: 1.5em;
+            }
+            h2 {
+                font-size: 1.2em;
+            }
+            .algorithm-list {
+                padding: 15px;
+            }
+            p {
+                font-size: 0.9em;
+            }
+        }
+        /* フッターのスタイル */
+        footer {
+            background-color: #f1f1f1;
+            padding: 10px 20px;
+            text-align: center;
+            margin-top: auto;
+            font-size: 0.9em;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>ゲームアルゴリズム一覧</h1>
+
+    <div class="algorithm-list">
+
+        <div class="algorithm-item">
+            <h2>ミニマックス法 (Minimax Algorithm)</h2>
+            <p><a href="https://roicra.jp/roigames/minmax/" target="_blank">https://roicra.jp/roigames/minmax/</a></p>
+            <p>説明: ゲーム理論に基づく基本的な決定アルゴリズムで、すべての可能な手を探索し、プレイヤーにとって最適な手を選択します。</p>
+            <p>実装可能: JavaScript, PHP, Python</p>
+        </div>
+
+        <div class="algorithm-item">
+            <h2>アルファベータ剪定 (Alpha-Beta Pruning)</h2>
+            <p><a href="https://roicra.jp/roigames/AlphaBetaPruning/" target="_blank">https://roicra.jp/roigames/AlphaBetaPruning/</a></p>
+            <p>説明: ミニマックス法の拡張で、不要な探索を省略し、効率を高めます。探索木の剪定により、計算量を減少させます。</p>
+            <p>実装可能: JavaScript, PHP, Python</p>
+        </div>
+
+        <div class="algorithm-item">
+            <h2>モンテカルロ木探索 (Monte Carlo Tree Search, MCTS)</h2>
+            <p><a href="https://roicra.jp/roigames/MCTS/" target="_blank">https://roicra.jp/roigames/MCTS/</a></p>
+            <p>説明: ランダムなシミュレーションを繰り返し、最適な手を探索する手法です。特に複雑なゲームに適しています。</p>
+            <p>実装可能: JavaScript, Python</p>
+        </div>
+
+        <div class="algorithm-item">
+            <h2>局面評価関数の改善 (Enhanced Evaluation Function)</h2>
+            <p><a href="https://roicra.jp/roigames/EnhancedEvaluationFunction/" target="_blank">https://roicra.jp/roigames/EnhancedEvaluationFunction/</a></p>
+            <p>説明: ゲームの局面を評価する関数を改善し、より精度の高い評価を行うことで、ミニマックス法などのアルゴリズムの精度を向上させます。</p>
+            <p>実装可能: JavaScript, PHP, Python</p>
+        </div>
+
+        <div class="algorithm-item">
+            <h2>トランスポジションテーブルの利用 (Transposition Table)</h2>
+            <p><a href="https://roicra.jp/roigames/TranspositionTable/" target="_blank">https://roicra.jp/roigames/TranspositionTable/</a></p>
+            <p>説明: 同じ局面が再度現れた場合に、以前の計算結果を再利用するためのテーブルです。これにより、計算の重複を避け、効率的な探索が可能になります。</p>
+            <p>実装可能: JavaScript, PHP, Python</p>
+        </div>
+
+        <div class="algorithm-item">
+            <h2>深層強化学習 (Deep Reinforcement Learning)</h2>
+            <p>未実装</p>
+            <p>説明: ニューラルネットワークと強化学習を組み合わせて、ゲームをプレイするエージェントをトレーニングします。AlphaGoのような高度な手法です。</p>
+            <p>実装可能: Python</p>
+        </div>
+
+    </div>
+
+    <!-- AMP広告を追加 -->
+    <div style="text-align: center; margin-top: 20px;">
+        <amp-ad width="300" height="250" type="a8"
+            data-aid="190713070907"
+            data-wid="001"
+            data-eno="01"
+            data-mid="s00000001642001130000"
+            data-mat="35JN5A-F006GI-CO4-6Q74X"
+            data-type="static">
+        </amp-ad>
+    </div>
+
+    <!-- 通常の広告リンクを追加 -->
+    <div style="text-align: center; margin-top: 20px;">
+        <a href="https://px.a8.net/svt/ejp?a8mat=35JN5A+F006GI+CO4+6Q74X" rel="nofollow">
+            <img border="0" width="300" height="250" alt="" src="https://www27.a8.net/svt/bgt?aid=190713070907&wid=001&eno=01&mid=s00000001642001130000&mc=1">
+        </a>
+        <img border="0" width="1" height="1" src="https://www14.a8.net/0.gif?a8mat=35JN5A+F006GI+CO4+6Q74X" alt="">
+    </div>
+
+    <!-- フッターを追加 -->
+    <footer>
+        Shiroi Programming School 2021 Established
+    </footer>
+
+</body>
+</html>

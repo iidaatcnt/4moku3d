@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>石取りゲーム</title>
+    <style>
+        /* CSSスタイルはここに記述 */
+        body {
+            font-family: sans-serif;
+            text-align: center;
+        }
+        .game-area {
+            margin: 20px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .stone {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            background-color: #ddd;
+            margin: 5px;
+            border-radius: 50%;
+        }
+        /* その他のスタイルは必要に応じて追加 */
+    </style>
+</head>
+<body>
+    <section class="input-area">
+        <label for="stoneNum">石の数:</label>
+        <input type="number" id="stoneNum" min="1">
+        <label for="maxTakeNum">1回に取れる最大の石の数:</label>
+        <input type="number" id="maxTakeNum" min="1">
+        <button onclick="startGame()">ゲームスタート</button>
+    </section>
+    <section class="game-area" id="gameArea">
+        </section>
+    <section class="result-area">
+        <p id="result"></p>
+        <button id="restartBtn" style="display: none;">もう一度遊ぶ</button>
+    </section>
+
+    <script>
+        // JavaScriptコードはここに記述
+        function startGame() {
+            // ... (ゲームロジックは省略)
+            // ゲーム終了時にリスタートボタンを表示
+            document.getElementById("restartBtn").style.display = "block";
+        }
+
+        // リスタートボタンのイベントリスナー
+        document.getElementById("restartBtn").addEventListener("click", () => {
+            // ゲームを初期化する処理
+        });
+    </script>
+</body>
+</html>

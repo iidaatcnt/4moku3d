@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>落ちる４目並べ（コンピュータ対戦）</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            background-color: #f0f0f0;
+            justify-content: center;
+            align-items: center;
+        }
+        .container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        h1 {
+            font-size: 2vw;
+            text-align: center;
+            margin: 20px 0;
+            white-space: nowrap;
+        }
+        .counter {
+            margin-bottom: 30px; /* ボードとカウンターの間により多くのスペースを追加 */
+        }
+        .board-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            width: 100%;
+            max-width: 90vmin;
+            max-height: 90vmin;
+            aspect-ratio: 7 / 6;
+        }
+        .board {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 10px; /* ボード間の間隔を調整 */
+            background-color: #8B4513;
+            padding: 10px;
+            border-radius: 10px;
+            width: 100%;
+            height: 100%;
+        }
+        .cell {
+            position: relative;
+            width: 100%;
+            height: 0;
+            padding-bottom: 100%;
+            background-color: white;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        .cell::before {
+            content: attr(data-label);
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 14px;
+            color: gray;
+            pointer-events: none;
+        }
+        .cell > div {
+            position: absolute;
+            top: 10%;
+            left: 10%;
+            right: 10%;
+            bottom: 10%;
+            border-radius: 50%;
+        }
+        .blue {
+            background-color: blue;
+        }
+        .red {
+            background-color: red;
+        }
+        #replayButton {
+            display: none;
+            margin-top: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        #moves {
+            margin-top: 20px;
+            font-size: 16px;
+            max-width: 100%;
+            overflow-x: auto;
+            display: flex;
+            flex-direction: column-reverse; /* 棋譜を降順に表示するための設定 */
+        }
+        footer {
+            background-color: #f1f1f1;
+            padding: 10px;
+            text-align: center;
+            width: 100%;
+        }
+        @media (max-width: 767px) {
+            .container {
+                max-width: 100%;
+                padding: 10px;
+            }
+            h1 {
+                font-size: 4vw;
+            }
+            .board {
+                gap: 5px;
+                padding: 5px;
+            }
+            .cell::before {
+                font-size: 12px;
+            }
+            .cell > div {
+                top: 15%;
+                left: 15%;
+                right: 15%;
+                bottom: 15%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>落ちる４目並べ（コンピュータ対戦）</h1>
+        <div id="counter" class="counter"></div>
+        <div class="board-container">
+            <div id="board" class="board"></div>
+        </div>
+        <p id="message">あなたの番です <a href="help.html" class="help-link">[HELP]</a></p>
+        <button id="replayButton">もう一度プレイ</button>
+        <div id="moves"></div>
+        <audio id="winSound" src="https://assets.mixkit.co/active_storage/sfx/2018/2018-preview.mp3"></audio>
+        <audio id="loseSound" src="https://assets.mixkit.co/active_storage/sfx/2019/2019-preview.mp3"></audio>
+        <audio id="placeSoundPlayer" src="https://assets.mixkit.co/active_storage/sfx/2020/2020-preview.mp3"></audio>
+        <audio id="placeSoundComputer" src="https://assets.mixkit.co/active_storage/sfx/2021/2021-preview.mp3"></audio>
+    </div>
+
+    <footer>
+        <a href="https://px.a8.net/svt/ejp?a8mat=35JN5A+F006GI+CO4+6E71D" rel="nofollow">
+            <img border="0" width="320" height="50" alt="" src="https://www20.a8.net/svt/bgt?aid=190713070907&wid=001&eno=01&mid=s00000001642001074000&mc=1"></a>
+            <img border="0" width="1" height="1" src="https://www16.a8.net/0.gif?a8mat=35JN5A+F006GI+CO4+6E71D" alt="">
+            <p>Shiroi Programming School 2021 Established</p>
+        </footer>
+
+    <script>
+        const board = document.getElementById('board');
+        const message = document.getElementById('message');
+        const replayButton = document.getElementById('replayButton');
+        const movesContainer = document.getElementById('moves');
+        const winSound = document.getElementById('winSound');
+        const loseSound = document.getElementById('loseSound');
+        const placeSoundPlayer = document.getElementById('placeSoundPlayer');
+        const placeSoundComputer = document.getElementById('placeSoundComputer');
+        const counter = document.getElementById('counter');
+        let currentPlayer = 'blue';
+        let gameBoard = Array(6).fill().map(() => Array(7).fill(null));
+        let gameOver = false;
+        let moveHistory = [];
+        const columns = ['a', 'b', 'c', 'd', 'e', 'f', 'g'];
+
+        function createBoard() {
+            board.innerHTML = '';
+            for (let row = 5; row >= 0; row--) {
+                for (let col = 0; col < 7; col++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'cell';
+                    cell.dataset.row = row;
+                    cell.dataset.col = col;
+                    cell.dataset.label = `${columns[col]}${row + 1}`;
+                    cell.addEventListener('click', () => playerMove(col));
+                    cell.addEventListener('touchstart', () => playerMove(col)); // タッチイベントを追加
+                    const piece = document.createElement('div');
+                    cell.appendChild(piece);
+                    board.appendChild(cell);
+                }
+            }
+        }
+
+        function playerMove(col) {
+            if (gameOver || currentPlayer !== 'blue' || !canPlacePiece(col)) return;
+            let row = placePiece(col);
+            if (row !== -1) {
+                placeSoundPlayer.play();
+                recordMove('B', col, row);
+                if (checkWin(row, col)) {
+                    endGame('青（プレイヤー）の勝利！', true);
+                } else if (isBoardFull()) {
+                    endGame('引き分け！');
+                } else {
+                    currentPlayer = 'red';
+                    message.innerHTML = 'コンピューターの番です... <a href="help.html" class="help-link">[HELP]</a>';
+                    setTimeout(() => {
+                        message.innerHTML = 'コンピューターが考え中... <a href="help.html" class="help-link">[HELP]</a>';
+                        setTimeout(computerMove, 1000);
+                    }, 500);
+                }
+            }
+        }
+
+        function computerMove() {
+            if (gameOver) return;
+            let col = findBestMove();
+            let row = placePiece(col);
+            if (row !== -1) {
+                placeSoundComputer.play();
+                recordMove('R', col, row);
+                if (checkWin(row, col)) {
+                    endGame('赤（コンピューター）の勝利！', false);
+                } else if (isBoardFull()) {
+                    endGame('引き分け！');
+                } else {
+                    currentPlayer = 'blue';
+                    message.innerHTML = 'あなたの番です <a href="help.html" class="help-link">[HELP]</a>';
+                }
+            }
+        }
+
+        function findBestMove() {
+            let bestScore = -Infinity;
+            let bestCol = 0;
+            for (let col = 0; col < 7; col++) {
+                if (canPlacePiece(col)) {
+                    let row = getNextEmptyRow(col);
+                    gameBoard[row][col] = 'red';
+                    let score = minimax(gameBoard, 0, false, -Infinity, Infinity);
+                    gameBoard[row][col] = null;
+                    if (score > bestScore) {
+                        bestScore = score;
+                        bestCol = col;
+                    }
+                }
+            }
+            return bestCol;
+        }
+
+        function minimax(board, depth, isMaximizing, alpha, beta) {
+            if (checkWinCondition('red')) {
+                return 10 - depth;
+            } else if (checkWinCondition('blue')) {
+                return depth - 10;
+            } else if (isBoardFull()) {
+                return 0;
+            }
+
+            if (depth >= 5) return 0; // 深さ制限
+
+            if (isMaximizing) {
+                let bestScore = -Infinity;
+                for (let col = 0; col < 7; col++) {
+                    if (canPlacePiece(col)) {
+                        let row = getNextEmptyRow(col);
+                        board[row][col] = 'red';
+                        let score = minimax(board, depth + 1, false, alpha, beta);
+                        board[row][col] = null;
+                        bestScore = Math.max(score, bestScore);
+                        alpha = Math.max(alpha, score);
+                        if (beta <= alpha) break;
+                    }
+                }
+                return bestScore;
+            } else {
+                let bestScore = Infinity;
+                for (let col = 0; col < 7; col++) {
+                    if (canPlacePiece(col)) {
+                        let row = getNextEmptyRow(col);
+                        board[row][col] = 'blue';
+                        let score = minimax(board, depth + 1, true, alpha, beta);
+                        board[row][col] = null;
+                        bestScore = Math.min(score, bestScore);
+                        beta = Math.min(beta, score);
+                        if (beta <= alpha) break;
+                    }
+                }
+                return bestScore;
+            }
+        }
+
+        function placePiece(col) {
+            for (let row = 0; row < 6; row++) {
+                if (gameBoard[row][col] === null) {
+                    gameBoard[row][col] = currentPlayer;
+                    const cell = document.querySelector(`.cell[data-row="${row}"][data-col="${col}"]`);
+                    const piece = document.createElement('div');
+                    piece.className = currentPlayer;
+                    cell.appendChild(piece);
+                    return row;
+                }
+            }
+            return -1;
+        }
+
+        function canPlacePiece(col) {
+            return gameBoard[5][col] === null;
+        }
+
+        function getNextEmptyRow(col) {
+            for (let row = 0; row < 6; row++) {
+                if (gameBoard[row][col] === null) {
+                    return row;
+                }
+            }
+            return -1;
+        }
+
+        function checkWin(row, col) {
+            const directions = [[0, 1], [1, 0], [1, 1], [1, -1]];
+            for (let [dx, dy] of directions) {
+                let count = 1;
+                for (let i = 1; i < 4; i++) {
+                    const newRow = row + dx * i;
+                    const newCol = col + dy * i;
+                    if (newRow < 0 || newRow >= 6 || newCol < 0 || newCol >= 7 || gameBoard[newRow][newCol] !== currentPlayer) break;
+                    count++;
+                }
+                for (let i = 1; i < 4; i++) {
+                    const newRow = row - dx * i;
+                    const newCol = col - dy * i;
+                    if (newRow < 0 || newRow >= 6 || newCol < 0 || newCol >= 7 || gameBoard[newRow][newCol] !== currentPlayer) break;
+                    count++;
+                }
+                if (count >= 4) return true;
+            }
+            return false;
+        }
+
+        function checkWinCondition(player) {
+            const directions = [[0, 1], [1, 0], [1, 1], [1, -1]];
+            for (let row = 0; row < 6; row++) {
+                for (let col = 0; col < 7; col++) {
+                    if (gameBoard[row][col] === player) {
+                        for (let [dx, dy] of directions) {
+                            let count = 1;
+                            for (let i = 1; i < 4; i++) {
+                                const newRow = row + dx * i;
+                                const newCol = col + dy * i;
+                                if (newRow < 0 || newRow >= 6 || newCol < 0 || newCol >= 7 || gameBoard[newRow][newCol] !== player) break;
+                                count++;
+                            }
+                            for (let i = 1; i < 4; i++) {
+                                const newRow = row - dx * i;
+                                const newCol = col - dy * i;
+                                if (newRow < 0 || newRow >= 6 || newCol < 0 || newCol >= 7 || gameBoard[newRow][newCol] !== player) break;
+                                count++;
+                            }
+                            if (count >= 4) return true;
+                        }
+                    }
+                }
+            }
+            return false;
+        }
+
+        function isBoardFull() {
+            return gameBoard.every(row => row.every(cell => cell !== null));
+        }
+
+        function endGame(msg, isPlayerWin) {
+            message.innerHTML = `${msg} <a href="help.html" class="help-link">[HELP]</a>`;
+            gameOver = true;
+            replayButton.style.display = 'block';
+            if (isPlayerWin === true) {
+                winSound.play();
+                document.body.style.backgroundColor = 'lightblue'; // 勝利時の背景色変更
+                updateCounter('player'); // プレイヤーの勝利をカウント
+            } else if (isPlayerWin === false) {
+                loseSound.play();
+                document.body.style.backgroundColor = 'lightcoral'; // 敗北時の背景色変更
+                updateCounter('computer'); // コンピュータの勝利をカウント
+            }
+        }
+
+        function resetGame() {
+            gameBoard = Array(6).fill().map(() => Array(7).fill(null));
+            gameOver = false;
+            currentPlayer = 'blue';
+            message.innerHTML = 'あなたの番です <a href="help.html" class="help-link">[HELP]</a>';
+            replayButton.style.display = 'none';
+            moveHistory = [];
+            movesContainer.innerHTML = '';
+            createBoard();
+            document.body.style.backgroundColor = '#f0f0f0'; // 背景色をリセット
+            showStartPopup(); // 再プレイ時にもポップアップを表示
+        }
+
+        function recordMove(player, col, row) {
+            const move = `${moveHistory.length + 1}. ${player} ${columns[col]}${row + 1}`;
+            moveHistory.push(move);
+            movesContainer.innerHTML = moveHistory.reverse().join('<br>');
+            moveHistory.reverse(); // 表示のために逆順にして戻す
+        }
+
+        function updateCounter(winner) {
+            fetch('counter.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `winner=${winner}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                const totalGames = data.player_wins + data.computer_wins + 1; // プレイヤー番号の修正
+                counter.innerHTML = `あなたは<span style="color: blue;">${totalGames}</span>人目のプレイヤーです。現在、<span style="color: blue;">${data.player_wins}</span>勝<span style="color: red;">${data.computer_wins}</span>敗です。`;
+            });
+        }
+
+        function showStartPopup() {
+            const startPopup = confirm("先攻後攻を選んでください。\n\n先攻: OK\n後攻: キャンセル");
+            if (startPopup) {
+                currentPlayer = 'blue';
+                message.innerHTML = 'あなたの番です <a href="help.html" class="help-link">[HELP]</a>';
+            } else {
+                currentPlayer = 'red';
+                message.innerHTML = 'コンピューターの番です... <a href="help.html" class="help-link">[HELP]</a>';
+                setTimeout(computerMove, 1000);
+            }
+        }
+
+        createBoard();
+        replayButton.addEventListener('click', resetGame);
+
+        // 初期表示時にカウンターを更新し、ポップアップを表示
+        updateCounter('');
+        showStartPopup();
+    </script>
+ 
+</body>
+</html>
