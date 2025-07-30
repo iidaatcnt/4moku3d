@@ -1,2 +1,18 @@
-# 4moku3d
-Falling 4moku game
+# 4moku3d - ゲームAIアルゴリズムデモ集
+
+このプロジェクトは、様々なゲームAIアルゴリズムを視覚的に体験できるデモ集です。特に4目並べゲームを題材に、異なるアルゴリズムがどのように動作し、ゲームの意思決定を行うかを解説しています。
+
+## 概要
+
+ゲームAIの基本的な概念から、より高度な探索手法まで、以下のアルゴリズムのデモを提供します。
+
+-   **ミニマックス法 (Minimax Algorithm):** ゲーム理論に基づく基本的な決定アルゴリズム。
+-   **アルファベータ剪定 (Alpha-Beta Pruning):** ミニマックス法の効率を向上させる探索最適化手法。
+-   **モンテカルロ木探索 (Monte Carlo Tree Search, MCTS):** ランダムなシミュレーションを繰り返し、最適な手を探索する手法。
+-   **局面評価関数の改善 (Enhanced Evaluation Function):** アルゴリズムの精度を向上させるための評価関数。
+-   **トランスポジションテーブルの利用 (Transposition Table):** 計算の重複を避け、効率的な探索を可能にする手法。
+-   **深層強化学習 (Deep Reinforcement Learning):** (未実装) ニューラルネットワークと強化学習を組み合わせた高度な手法。
+
+## ライブデモ
+
+[https://iidaatcnt.github.io/4moku3d/](https://iidaatcnt.github.io/4moku3d/)
